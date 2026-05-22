@@ -80,3 +80,7 @@ pypy3 "06_百亿_终极扫描.py"
 - numpy, scipy（09 需要）
 - matplotlib（所有均需要）
 - PyPy 3.11（05、06 推荐）
+
+## 联系
+
+wangkukushe@163.com
