@@ -15,9 +15,13 @@ oscillatory decay component in ln(ln N) space.
 
 **Run:**
 ```powershell
-python "01_起步_万级.py"      # entry point, N=10K
-pypy3 "05_亿级_扫描.py"       # large-scale, needs PyPy
+cd 素数实验
+python 01_起步_万级.py       # entry point, N=10K
+pypy3 05_亿级_扫描.py        # large-scale, needs PyPy
 ```
+
+> **2026-05-27** — All files moved into `素数实验/` subdirectory.
+> See [素数实验/README.md](素数实验/README.md) for latest zero-model validation results.
 
 ---
 
@@ -40,6 +44,8 @@ S = SP_mean / (1 + δSP)
 
 ## 文件说明
 
+> **注意：** 所有文件已移至 `素数实验/` 子目录，路径需加前缀 `素数实验/`。
+
 | 文件 | 说明 | 输出图 | 运行方式 |
 |---|---|---|---|
 | `01_起步_万级.py` | N=10000，K=50，概念验证 | `01_S_distribution_10K.png` | `python` |
@@ -51,20 +57,26 @@ S = SP_mean / (1 + δSP)
 | `07_局部窗口_欧拉点.py` | [1500,1800] 局部 S 验证 | `07_local_window_euler.png` | `python` |
 | `08_宽域_相变.py` | [1700,3000] 宽域逐区间素数对比 + SP 相变 | `08_wide_phase_transition.png` | `python` |
 | `09_极限常数_拟合.py` | 16 点拟合 S_∞，幂律 + 振荡修正 | `09_convergence_fit.png` | `python` |
+| `10_白噪声_校准.py` | ★ S 度量偏心检验 — Poisson/Bernoulli/Li(x)导引 | `10_whitenoise_calibration.png` | `python` |
+| `11_同余约束_检验.py` | ★ 尾数分布驱动力检验 — mod2/mod3/mod5/mod10 | `11_congruence_constraints.png` | `python` |
+| `12_Li_Poisson_对照.py` | ★ Li(x)密度趋势检验 — 理论/经验/权重不放回 | `12_lix_poisson.png` | `python` |
 
 ## 运行方式
 
-普通 Python（01-04, 07-09）：
 ```powershell
-cd "f:\数据实验"
-python "01_起步_万级.py"
-```
+cd 素数实验
 
-PyPy（05-06，需大量内存和时间）：
-```powershell
-cd "f:\数据实验"
-pypy3 "05_亿级_扫描.py"
-pypy3 "06_百亿_终极扫描.py"
+# 普通 Python（01-04, 07-12）
+python 01_起步_万级.py
+
+# 零模型检验（10-12）
+python 10_白噪声_校准.py
+python 11_同余约束_检验.py
+python 12_Li_Poisson_对照.py
+
+# PyPy（05-06，需大量内存和时间）
+pypy3 05_亿级_扫描.py
+pypy3 06_百亿_终极扫描.py
 ```
 
 ## 核心结果
@@ -74,6 +86,16 @@ pypy3 "06_百亿_终极扫描.py"
 - S(N) 非单调收敛，存在系统振荡
 - 振荡修正拟合：R² = 0.998，ω ≈ 6.5 rad/ln(ln N)，β ≈ 0.2
 - S_∞ 估计约 0.719
+
+### 零模型稳健性检验 (2026-05-27)
+
+| 检验 | 零模型 S 均值 | 距真素数 | 假阳性 |
+|------|-------------|----------|--------|
+| 白噪声校准 | 0.61~0.68 | 7.6σ | 0% |
+| 同余约束 (mod10) | 0.6429 | 7.0σ | 0% |
+| Li(x)-Poisson | 0.68~0.69 | 5.4σ | 0% |
+
+> 14000 次零模型抽样，0 次假阳性。S(N) 既非度量伪影，也非已知尾数分布或素数定理密度趋势的简单推论。
 
 ## 依赖
 
@@ -93,3 +115,15 @@ pypy3 "06_百亿_终极扫描.py"
 ## 联系
 
 wangkukushe@163.com
+
+---
+
+## 更新日志
+
+### 2026-05-27 — 零模型稳健性检验 + 项目重组
+
+- **新增 `素数实验/` 子目录**，所有 .py 脚本和 figures 统一归入
+- **新增 10_白噪声_校准.py**：排除 S 度量自身偏心的质疑。Poisson/Bernoulli/Li(x)导引/固定间隔四种零模型各 2000 次抽样，假阳性 0%，S(素数) 高 7.6σ
+- **新增 11_同余约束_检验.py**：逐级收紧尾数约束 (mod2→mod3→mod5→mod10)，证明已知尾数分布仅解释效应的 10%，剩余 7.0σ 来自更深层结构
+- **新增 12_Li_Poisson_对照.py**：Li(x)密度趋势对照（理论密度/经验密度/权重不放回），证明素数存在 Li(x) 之外的微观序，S(素数) 高 5.4σ
+- **新增 素数实验/README.md**：完整记录三项检验的方法、数据、判决
