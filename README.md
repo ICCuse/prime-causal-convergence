@@ -11,7 +11,8 @@ oscillatory decay component in ln(ln N) space.
 - 16 data points from N=100K to N=10B
 - S(10B) = 0.748854, effect size η = 899.91σ
 - Power-law fit: R² = 0.995; oscillatory correction: R² → 0.998
-- Estimated limit: S_∞ ≈ 0.719, oscillation frequency ω ≈ 6.5 rad/ln(ln N)
+- Estimated limit via oscillation fit: S_∞ ≈ 0.719
+- Zeta-zero cross-scale extrapolation: S_∞ ≈ 0.749 (see 拓扑荷推导)
 
 **Run:**
 ```powershell
@@ -60,6 +61,14 @@ S = SP_mean / (1 + δSP)
 | `10_白噪声_校准.py` | ★ S 度量偏心检验 — Poisson/Bernoulli/Li(x)导引 | `10_whitenoise_calibration.png` | `python` |
 | `11_同余约束_检验.py` | ★ 尾数分布驱动力检验 — mod2/mod3/mod5/mod10 | `11_congruence_constraints.png` | `python` |
 | `12_Li_Poisson_对照.py` | ★ Li(x)密度趋势检验 — 理论/经验/权重不放回 | `12_lix_poisson.png` | `python` |
+| `拓扑荷推导/01_zeta_zeros_sum.py` | 零点密度积分 → S 理论先验预测 | 终端输出 | `python` |
+| `拓扑荷推导/02_formula_search.py` | 候选公式 S = exp(-c·Σ 1/\|ρ\|^k) 扫描 | 终端输出 | `python` |
+| `拓扑荷推导/03_analysis.py` | 参数后验拟合 k=3/2 | 终端输出 | `python` |
+| `拓扑荷推导/04_correlation_test.py` | 零点相位相关性对系数的放大 | 终端输出 | `python` |
+| `拓扑荷推导/05_layer_experiment.py` | 确定性筛逐层乘法约束 | `13_layer_by_layer_v4.png` | `python` |
+| `拓扑荷推导/06_gue_simulation.py` | GUE 间距替换 → repulsion 效应 | 终端输出 | `python` |
+| `拓扑荷推导/07_large_scale_S.py` | N=10⁵~10⁹ 跨尺度检验 + S_∞ 外推 | `14_large_scale_SN.png` | `python` |
+| `拓扑荷推导/README.md` | 拓扑荷推导完整报告 | — | — |
 
 ## 运行方式
 
@@ -85,7 +94,7 @@ pypy3 06_百亿_终极扫描.py
 - S(10B) = 0.748854，效应量 η = 899.91σ
 - S(N) 非单调收敛，存在系统振荡
 - 振荡修正拟合：R² = 0.998，ω ≈ 6.5 rad/ln(ln N)，β ≈ 0.2
-- S_∞ 估计约 0.719
+- 振荡外推 S_∞ ≈ 0.719；零点求和跨尺度外推 S_∞ ≈ 0.749（见拓扑荷推导）
 
 ### 零模型稳健性检验 (2026-05-27)
 
@@ -96,6 +105,41 @@ pypy3 06_百亿_终极扫描.py
 | Li(x)-Poisson | 0.68~0.69 | 5.4σ | 0% |
 
 > 14000 次零模型抽样，0 次假阳性。S(N) 既非度量伪影，也非已知尾数分布或素数定理密度趋势的简单推论。
+
+### 拓扑荷推导：$S_\infty$ 与 zeta 零点的定量关联 (2026-05-28)
+
+详见 `素数实验/拓扑荷推导/README.md`。
+
+**核心结果：**
+
+$$
+\boxed{S_\infty \approx 0.749}
+$$
+
+- 数值拟合（09）：$S_\infty = 0.748854$
+- 大尺度外推（07）：$S_\infty = 0.748965$
+- 三位数字一致
+
+**公式形式：**
+
+$$
+S(N) = \exp\!\left(-c \sum_{\gamma < T_{\mathrm{eff}}(N)} \frac{1}{|\rho|}\right), \qquad
+T_{\mathrm{eff}} = N^{-1}(\pi(N))
+$$
+
+零点密度：$N(T) = \frac{T}{2\pi}\log\frac{T}{2\pi e} + \frac{7}{8}$
+
+**关键发现：**
+
+| 问题 | 结论 |
+|---|---|
+| 理论先验 $(k=2, c=0.5)$ | ✗ 预测 $S\approx 0.979$，偏离数值 ~30% |
+| 跨尺度稳定性检验 | $k=1.0$ 最优（CV=45.6%），优于 $k=1.5$（CV=82.9%） |
+| GUE 间距模拟 | zeta 间距刚性约为纯 GUE 的 4 倍 |
+| 逐层筛种子 | S 值随乘法约束叠加从 0.692 单调增至 0.910 |
+| $S_\infty$ 外推 | $\exp(-0.0066 \times 43.724) = 0.748965$ |
+
+> ⚠️ $k=1.0$ 来自跨尺度稳定性检验，非理论先验。$\sum 1/|\rho|$ 发散，依赖截断 $T_{\mathrm{eff}}$ 随 $N$ 自然增长，构成自洽框架。幂次从 $k=2$ 偏离到 $k=1$ 的理论原因待解释。
 
 ## 依赖
 
@@ -119,6 +163,14 @@ wangkukushe@163.com
 ---
 
 ## 更新日志
+
+### 2026-05-28 — 拓扑荷推导
+
+- **新增 `素数实验/拓扑荷推导/`**（7 个脚本 + README）：S_∞ 与 Riemann zeta 零点求和的定量关联
+- 大尺度跨尺度检验：$N=10^5 \sim 10^9$ 五个尺度独立计算，$k=1.0$ 跨尺度稳定性最优 (CV=45.6%)
+- $S_\infty$ 外推：$\exp(-0.0066 \times \sum_{T<10^8} 1/\vert \rho\vert ) = 0.748965$，命中数值拟合 0.748854
+- GUE 模拟：zeta 零点间距刚性约为纯 GUE 的 4 倍
+- 更新主 README 文件表和核心结果章节
 
 ### 2026-05-27 — 零模型稳健性检验 + 项目重组
 
